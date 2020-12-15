@@ -47,8 +47,8 @@ bool GetIMU::loop() {
 		break;
 	case 3:
 		e = bno->getVector(Adafruit_BNO055::VECTOR_EULER);
-		bufferINTERNAL[9] = e.z();// tilt
-		bufferINTERNAL[10] = e.y();// elevation
+		bufferINTERNAL[9] = e.y();// tilt
+		bufferINTERNAL[10] = e.z();// elevation
 		bufferINTERNAL[11] = e.x();// azimuth
 	}
 	updateIndex++;
