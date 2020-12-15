@@ -22,12 +22,13 @@ WifiManager manager;
 String * name = new String("midnight");
 Adafruit_BNO055 bno;
 GetIMU * sensor;
+ServoServer * servos;
 void setup()
 {
 	manager.setup();
 	sensor = new GetIMU();
 	Serial.println("Loading with name: "+name[0]);
-
+	servos=new ServoServer();
 	//Initialise the sensor
 	if (bno.begin()) {
 		delay(1000);
@@ -40,7 +41,7 @@ void setup()
 
 	coms.attach(new NameCheckerServer(name));
 	coms.attach(sensor);
-	coms.attach(new ServoServer());
+	coms.attach(servos);
 }
 
 // The loop function is called in an endless loop
@@ -48,4 +49,5 @@ void loop()
 {
 	manager.loop();
 	coms.server();
+	servos->loopServos();
 }

@@ -21,7 +21,10 @@ private :
 	Servo listOfServo[MAX_IO_SERVO];
 	PCA9685 pca9685;
 	int maps [MAX_IO_SERVO];
+	int cache[MAX_POSSIBLE_SERVOS];
+	int flush=false;
 	bool firstRun=true;
+
 public:
 	ServoServer();
 	virtual ~ServoServer();
@@ -29,6 +32,7 @@ public:
 	// Buffer contains data from the packet coming in at the start of the function
 	// User data is written into the buffer to send it back
 	void event(float * buffer);
+	void loopServos();
 };
 
 #endif /* SRC_SERVOSERVER_H_ */
