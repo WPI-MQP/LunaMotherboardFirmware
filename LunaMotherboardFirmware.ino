@@ -4,6 +4,7 @@
 #include <WiFi.h>
 #include <PacketEvent.h>
 #include <Esp32SimplePacketComs.h>
+#include <server/UDPSimplePacket.h>
 #include <Preferences.h>
 #include <Esp32WifiManager.h>
 #include <wifi/WifiManager.h>
@@ -11,18 +12,19 @@
 #include "src/ServoServer.h"
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
+#include <PCA9685.h>
 #include "src/GetIMU.h"
 // SImple packet coms implementation useing WiFi
 UDPSimplePacket coms;
 // WIfi stack managment state machine
 WifiManager manager;
 //The setup function is called once at startup of the sketch
-String * name = new String("kevkat");
+String * name = new String("midnight");
 Adafruit_BNO055 bno;
 GetIMU * sensor;
 void setup()
 {
-	manager.setupScan();
+	manager.setup();
 	sensor = new GetIMU();
 	Serial.println("Loading with name: "+name[0]);
 

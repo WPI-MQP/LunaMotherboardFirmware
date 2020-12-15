@@ -9,13 +9,18 @@
 #define SRC_SERVOSERVER_H_
 #include <SimplePacketComs.h>
 #include <ESP32Servo.h>
-#define MAX_POSSIBLE_SERVOS 16
+#define MAX_IO_SERVO 4
+#define MAX_PCA9685_SERVO 16
+#define MAX_POSSIBLE_SERVOS (MAX_IO_SERVO+MAX_PCA9685_SERVO)
 #include <stdint.h>
+#include <PCA9685.h>
+#include "pinmap_smallkat.h"
 
 class ServoServer : public PacketEventAbstract {
 private :
-	Servo listOfServo[MAX_POSSIBLE_SERVOS];
-	int map [MAX_POSSIBLE_SERVOS];
+	Servo listOfServo[MAX_IO_SERVO];
+	PCA9685 pca9685;
+	int maps [MAX_IO_SERVO];
 	bool firstRun=true;
 public:
 	ServoServer();

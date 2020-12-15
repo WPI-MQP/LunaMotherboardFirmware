@@ -8,22 +8,10 @@
 #include "ServoServer.h"
 
 ServoServer::ServoServer() :PacketEventAbstract(1962){
-	map[0]= 15;
-	map[1]= 2;
-	map[2]= 4;
-	map[3]= 16;
-	map[4]= 17;
-	map[5]= 5;
-	map[6]= 19;
-	map[7]= 23;
-	map[8]= 13;
-	map[9]= 12;
-	map[10]= 14;
-	map[11]= 27;
-	map[12]= 26;
-	map[13]= 25;
-	map[14]= 33;
-	map[15]= 32;
+	maps[0]= 15;
+	maps[1]= 2;
+	maps[2]= 4;
+	maps[3]= 16;
 	firstRun=true;
 }
 
@@ -36,13 +24,23 @@ ServoServer::~ServoServer() {
 // User data is written into the buffer to send it back
 void ServoServer::event(float * buffer){
 	uint8_t * bBuffer = (uint8_t *)buffer;
+	if(firstRun){
+		  pca9685.setupSingleDevice(Wire,0x40);
+		  pca9685.setupOutputEnablePin(PWM_ENABLE_PIN);
+		  pca9685.enableOutputs(PWM_ENABLE_PIN);
+		  pca9685.setToServoFrequency();
+	}
 	for(int i=0;i<MAX_POSSIBLE_SERVOS;i++){
-		if(firstRun){
-			listOfServo[i].setPeriodHertz(330);
-			listOfServo[i].attach(map[i], 1000, 2000);
-
+		if(i>=MAX_PCA9685_SERVO){
+			int srvIndex= i-MAX_PCA9685_SERVO;
+			if(firstRun){
+				listOfServo[srvIndex].setPeriodHertz(330);
+				listOfServo[srvIndex].attach(maps[srvIndex], 1000, 2000);
+			}
+			listOfServo[srvIndex].write(bBuffer[i]);
+		}else{
+			pca9685.setChannelServoPulseDuration(i,map(bBuffer[i],0,180,1000,2000));
 		}
-		listOfServo[i].write(bBuffer[i]);
 	}
 	if(firstRun)
 		firstRun=false;
