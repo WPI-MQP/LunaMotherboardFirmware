@@ -14,6 +14,7 @@
 #include <Adafruit_BNO055.h>
 #include <PCA9685.h>
 #include "src/GetIMU.h"
+#include "src/PowerServer.h"
 #include <Wire.h>
 // SImple packet coms implementation useing WiFi
 UDPSimplePacket coms;
@@ -25,16 +26,19 @@ String * name = new String("midnight");
 Adafruit_BNO055 bno;
 GetIMU * sensor;
 ServoServer * servos;
+PowerServer * power;
 TwoWire Wire_2 = TwoWire(1);
-
+int toggled = 0;
 void setup()
 {
+  pinMode(HEARTBEAT_LED, OUTPUT);
 	manager.setup();
 	sensor = new GetIMU();
   Wire.begin(32,27);
   Wire_2.begin(21,22); // SDA pin 16, SCL pin 17, 400kHz frequency
 	Serial.println("Loading with name: "+name[0]);
 	servos=new ServoServer();
+  power = new PowerServer();
 
 	//Initialise the sensor
   bno = Adafruit_BNO055(55, 0x28, &Wire_2);
@@ -51,6 +55,9 @@ void setup()
 	coms.attach(new NameCheckerServer(name));
 	coms.attach(sensor);
 	coms.attach(servos);
+  coms.attach(power);
+  toggled = millis();
+
 }
 
 // The loop function is called in an endless loop
@@ -59,4 +66,10 @@ void loop()
 	manager.loop();
 	coms.server();
 	servos->loopServos();
+ if(millis()-toggled >500)
+ { 
+  digitalWrite(HEARTBEAT_LED, !digitalRead(HEARTBEAT_LED));
+  toggled = millis();
+  
+ }
 }
