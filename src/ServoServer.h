@@ -24,6 +24,7 @@ private :
 	int cache[MAX_POSSIBLE_SERVOS];
 	int flush=false;
 	bool firstRun=true;
+	bool new_data = false;
 
 public:
 	ServoServer();

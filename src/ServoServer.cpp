@@ -27,22 +27,28 @@ void ServoServer::loopServos() {
 			pca9685.enableOutputs(PWM_ENABLE_PIN);
 			pca9685.setToServoFrequency();
 		}
-		for (int i = 0; i < MAX_POSSIBLE_SERVOS; i++) {
-			if (i >= MAX_PCA9685_SERVO) {
-				int srvIndex = i - MAX_PCA9685_SERVO;
-				if (firstRun) {
-					listOfServo[srvIndex].setPeriodHertz(330);
-					listOfServo[srvIndex].attach(maps[srvIndex], 1000, 2000);
+		if(new_data)
+		{
+			for (int i = 0; i < MAX_POSSIBLE_SERVOS; i++) {
+				if (i >= MAX_PCA9685_SERVO) {
+					int srvIndex = i - MAX_PCA9685_SERVO;
+					if (firstRun) {
+						listOfServo[srvIndex].setPeriodHertz(330);
+						listOfServo[srvIndex].attach(maps[srvIndex], 1000, 2000);
+					}
+
+					listOfServo[srvIndex].write(cache[i]);
+				} else {
+					pca9685.setChannelServoPulseDuration(i,
+							map(cache[i], 0, 180, 1000, 2000));
 				}
-				listOfServo[srvIndex].write(cache[i]);
-			} else {
-				pca9685.setChannelServoPulseDuration(i,
-						map(cache[i], 0, 180, 1000, 2000));
 			}
+			new_data = false;
 		}
 		if (firstRun)
 			firstRun = false;
 	}
+
 }
 
 //User function to be called when a packet comes in
@@ -55,4 +61,6 @@ void ServoServer::event(float *buffer) {
 		cache[i] = bBuffer[i];
 	}
 	flush = true;
+	new_data = true;
+
 }
